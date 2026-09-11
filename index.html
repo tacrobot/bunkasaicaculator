@@ -1,567 +1,861 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>文化祭 得点計算</title>
-<style>
-  :root {
-    --bg: #f2f2f2;
-    --card: #ffffff;
-    --border: #000000;
-    --text: #000000;
-    --text-muted: #4d4d4d;
-    --accent: #1a56db;
-    --radius: 0;
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>文化祭 得点計算</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Space+Grotesk:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #002468;
+        --primary-container: #003896;
+        --secondary: #00629f;
+        --surface: #fbf8ff;
+        --low: #f2f3ff;
+        --high: #e7e6ff;
+        --muted: #434652;
+      }
 
-  * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+      body {
+        background:
+          radial-gradient(
+            circle at 100% 0%,
+            rgba(219, 225, 255, 0.7),
+            transparent 34rem
+          ),
+          var(--surface);
+        color: var(--primary);
+        font-family:
+          Inter, "Yu Gothic", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+      button,
+      select {
+        font: inherit;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          "FILL" 0,
+          "wght" 400,
+          "GRAD" 0,
+          "opsz" 24;
+        line-height: 1;
+      }
+      .app {
+        padding: 16px 16px 32px;
+      }
+      #input-screen > h1 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 16px;
+        font:
+          700 28px/1.2 "Space Grotesk",
+          Inter,
+          sans-serif;
+        letter-spacing: -0.02em;
+      }
+      .app-icon {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        place-items: center;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 24px;
+      }
+      .card {
+        margin-bottom: 16px;
+        padding: 16px;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 8px 22px rgba(0, 36, 104, 0.08);
+      }
+      #games-container .card + .card {
+        position: relative;
+      }
+      #games-container .card + .card::before {
+        position: absolute;
+        top: -9px;
+        right: 0;
+        left: 0;
+        height: 1px;
+        background: #7a94b8;
+        content: "";
+      }
+      .game-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--high);
+      }
+      .game-title {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 5px 10px;
+        border-radius: 4px;
+        background: var(--primary);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+      }
+      .game-subtotal {
+        display: flex;
+        align-items: baseline;
+        gap: 4px;
+        color: var(--secondary);
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .game-subtotal strong {
+        font-size: 16px;
+      }
+      .product-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin: 8px 0;
+      }
+      .product-heading {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 2px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+      .product-heading .material-symbols-outlined {
+        color: var(--primary);
+        font-size: 15px;
+      }
+      .product-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 56px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: var(--low);
+      }
+      .product-label {
+        display: flex;
+        align-items: center;
+        color: var(--primary);
+        font-size: 17px;
+        font-weight: 700;
+      }
+      .counter {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .counter button {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        place-items: center;
+        border: 0;
+        border-radius: 8px;
+        background: var(--high);
+        color: var(--primary);
+        font-size: 24px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .counter button:last-child {
+        background: var(--primary);
+        color: #fff;
+      }
+      .counter .qty {
+        width: 36px;
+        color: var(--primary);
+        font-size: 20px;
+        font-weight: 700;
+        text-align: center;
+      }
+      .time-row {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      .quick-time {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 12px;
+        border-radius: 8px;
+        background: var(--high);
+      }
+      .quick-time-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--primary);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .timer-icon {
+        color: var(--secondary);
+        font-size: 19px;
+      }
+      .digital-time-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 6px;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 36, 104, 0.06);
+      }
+      .time-adjust {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        height: 40px;
+        min-width: 76px;
+        padding: 7px 8px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--high);
+        color: var(--primary);
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1;
+        cursor: pointer;
+      }
+      .time-adjust span {
+        font-size: 11px;
+        line-height: 1;
+      }
+      .digital-time {
+        flex: 1;
+        color: var(--primary);
+        font:
+          700 28px Consolas,
+          monospace;
+        text-align: center;
+      }
+      .time-presets {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+      .time-presets button {
+        padding: 5px 4px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: #fff;
+        color: var(--primary);
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .time-presets button.active {
+        border-color: var(--primary);
+        background: var(--primary);
+        color: #fff;
+      }
+      .game-score {
+        display: none;
+      }
+      .summary {
+        padding: 16px 16px 8px;
+        border-radius: 12px 12px 0 0;
+        background: #fff;
+        box-shadow: 0 8px 20px rgba(0, 36, 104, 0.08);
+      }
+      .summary-row {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        padding: 9px 0 9px 28px;
+        border-bottom: 1px solid var(--high);
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .summary-row .summary-icon {
+        position: absolute;
+        left: 0;
+        color: var(--primary);
+        font-size: 19px;
+      }
+      .summary-row:nth-child(3) {
+        border-bottom: 0;
+        color: var(--secondary);
+        font-weight: 600;
+      }
+      .summary-row span:last-child {
+        color: var(--primary);
+        font-weight: 700;
+      }
+      .summary-row:nth-child(3) span:last-child,
+      .summary-row:nth-child(3) .summary-icon {
+        color: var(--secondary);
+      }
+      .actions {
+        display: flex;
+        gap: 10px;
+      }
+      #input-screen > .actions {
+        padding: 8px 16px 16px;
+        border-radius: 0 0 12px 12px;
+        background: #fff;
+        box-shadow: 0 8px 20px rgba(0, 36, 104, 0.08);
+      }
+      .btn {
+        flex: 1;
+        min-height: 52px;
+        padding: 12px 16px;
+        border: 0;
+        border-radius: 8px;
+        color: #304052;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      }
+      .btn-secondary {
+        background: #eef2f7;
+      }
+      .btn-primary {
+        background: #00629f;
+        color: #fff;
+      }
+      .action-arrow {
+        margin-left: 6px;
+        font-size: 22px;
+        vertical-align: middle;
+      }
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
-    -webkit-tap-highlight-color: transparent;
-  }
+      #result-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        display: none;
+        width: 100vw;
+        min-height: 100vh;
+        background: #fff;
+      }
+      #result-screen .payslip {
+        position: absolute;
+        top: 3%;
+        left: 3.1%;
+        width: 93%;
+        height: 81.8%;
+        min-height: 0;
+        margin: 0;
+        overflow: hidden;
+        border-radius: 19px;
+        background: var(--primary);
+        box-shadow: 0 18px 28px rgba(0, 0, 0, 0.12);
+      }
+      .result-card-background {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      .result-card-background path {
+        fill: rgba(45, 78, 136, 0.68);
+      }
+      .result-content {
+        position: absolute;
+        inset: 8.8% 0 8%;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .payslip-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52%;
+        min-width: 300px;
+        height: 10.2%;
+        min-height: 41px;
+        gap: 10px;
+        padding: 0 18px;
+        border-radius: 999px;
+        background: #08459c;
+        color: #98b9ff;
+        font-size: clamp(21px, 2.7vw, 29px);
+        font-weight: 700;
+      }
+      .result-badge {
+        flex: 0 0 auto;
+        color: #98b9ff;
+        font-size: 28px;
+      }
+      .result-formula {
+        margin: 0;
+        color: #a9c1f7;
+        font-size: clamp(21px, 2.6vw, 28px);
+        line-height: 1.2;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .result-amount {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        margin: 0;
+        line-height: 0.9;
+        white-space: nowrap;
+      }
+      .result-number {
+        color: #fff;
+        font-size: clamp(88px, 14vw, 145px);
+        font-weight: 700;
+        letter-spacing: -0.055em;
+      }
+      .result-unit {
+        margin: 0 0 8px 4px;
+        color: #a8c8ff;
+        font-size: clamp(50px, 7vw, 72px);
+        font-weight: 700;
+      }
+      .result-message {
+        display: flex;
+        flex-direction: column;
+        width: 92%;
+        margin: 0;
+        color: #d1ddf6;
+        font-size: clamp(18px, 2.45vw, 27px);
+        line-height: 1.7;
+        text-align: center;
+      }
+      .result-breakdown {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+      #result-screen .actions {
+        position: absolute;
+        top: 85.9%;
+        left: 3.1%;
+        right: 3.1%;
+        justify-content: center;
+        height: 6.2%;
+        gap: 1.4%;
+      }
+      #result-screen .btn {
+        flex: 0 1 330px;
+        height: 100%;
+        min-height: 0;
+        max-width: 330px;
+        border-radius: 10px;
+        padding: 0 18px;
+        font-size: clamp(16px, 2vw, 23px);
+      }
+      @media (orientation: portrait) {
+        #result-screen {
+          top: 50%;
+          left: 50%;
+          right: auto;
+          bottom: auto;
+          width: 100vh;
+          height: 100vw;
+          min-height: 0;
+          transform: translate(-50%, -50%) rotate(90deg);
+          transform-origin: center center;
+          overflow: hidden;
+          padding: 0;
+        }
+      }
+      @media (max-width: 520px) {
+        .time-adjust {
+          min-width: 64px;
+        }
+        .payslip-title {
+          width: 58%;
+          min-width: 0;
+          gap: 8px;
+          padding: 0 14px;
+        }
+        .result-badge {
+          width: 24px;
+          height: 24px;
+          font-size: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div id="input-screen">
+        <h1>
+          <span class="material-symbols-outlined app-icon" aria-hidden="true"
+            >functions</span
+          ><span>得点入力</span>
+        </h1>
+        <div id="games-container"></div>
+        <div class="summary">
+          <div class="summary-row">
+            <span
+              class="material-symbols-outlined summary-icon"
+              aria-hidden="true"
+              >shopping_bag</span
+            ><span>商品得点</span><span id="sum-product">0 デルタ</span>
+          </div>
+          <div class="summary-row">
+            <span
+              class="material-symbols-outlined summary-icon"
+              aria-hidden="true"
+              >hourglass_bottom</span
+            ><span>残り時間合計</span><span id="sum-time">0:00</span>
+          </div>
+          <div class="summary-row">
+            <span
+              class="material-symbols-outlined summary-icon"
+              aria-hidden="true"
+              >bolt</span
+            ><span>時間ボーナス</span><span id="sum-bonus">0 デルタ</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="reset-btn">リセット</button
+          ><button class="btn btn-primary" id="show-result-btn">
+            結果表示
+          </button>
+        </div>
+      </div>
 
-  .app {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 12px 10px 20px;
-  }
-
-  h1 {
-    font-size: 28px;
-    font-weight: 700;
-    text-align: center;
-    margin: 0 0 14px;
-    letter-spacing: 0.02em;
-  }
-
-  .card {
-    background: var(--card);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px;
-    margin-bottom: 8px;
-  }
-
-  .game-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0 0 8px;
-    color: var(--text);
-  }
-
-  .product-list {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 8px;
-  }
-
-  .product-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: none;
-    border: none;
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-    padding: 10px 2px;
-    text-align: left;
-  }
-
-  .product-item:last-child {
-    border-bottom: none;
-  }
-
-  .product-label {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .counter {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .counter button {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    background: none;
-    color: var(--accent);
-    font-size: 26px;
-    font-weight: 700;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-
-  .counter button:active {
-    color: #0d3aa0;
-  }
-
-  .counter .qty {
-    width: 32px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .time-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
-    font-size: 18px;
-    margin-bottom: 8px;
-  }
-
-  .time-row .row-label {
-    color: var(--text);
-    font-weight: 700;
-    margin-right: 4px;
-  }
-
-  select {
-    font-size: 18px;
-    padding: 8px 8px;
-    border-radius: 0;
-    border: 2px solid var(--border);
-    background: #ffffff;
-    color: var(--text);
-  }
-
-  .game-score {
-    text-align: right;
-    font-size: 16px;
-    color: var(--text);
-    border-top: 1px solid var(--border);
-    padding-top: 6px;
-  }
-
-  .game-score strong {
-    color: var(--text);
-    font-size: 20px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .summary {
-    background: var(--card);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 12px;
-    margin-bottom: 10px;
-  }
-
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    font-size: 17px;
-    color: var(--text);
-    padding: 4px 0;
-  }
-
-  .summary-row span:last-child {
-    font-variant-numeric: tabular-nums;
-    color: var(--text);
-  }
-
-  .summary-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-top: 4px;
-    padding-top: 8px;
-    border-top: 2px solid var(--border);
-  }
-
-  .summary-total .label {
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .summary-total .value {
-    font-size: 30px;
-    font-weight: 700;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .actions {
-    display: flex;
-    gap: 8px;
-  }
-
-  .btn {
-    flex: 1;
-    padding: 18px;
-    border-radius: 0;
-    font-size: 19px;
-    font-weight: 700;
-    border: 2px solid var(--border);
-    cursor: pointer;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #ffffff;
-  }
-
-  .btn-secondary {
-    background: #ffffff;
-    color: var(--text);
-  }
-
-  /* リザルト画面 */
-  #result-screen {
-    display: none;
-    flex-direction: column;
-    justify-content: center;
-    min-height: calc(100vh - 32px);
-  }
-
-  .payslip {
-    background: var(--card);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px 14px;
-    margin-bottom: 10px;
-  }
-
-  .payslip-title {
-    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
-    font-size: 26px;
-    font-weight: 700;
-    text-align: center;
-    margin: 0 0 14px;
-    letter-spacing: 0.15em;
-  }
-
-  .payslip-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 18px;
-  }
-
-  .payslip-row .amount {
-    font-variant-numeric: tabular-nums;
-    color: var(--text);
-    font-weight: 700;
-  }
-
-  .payslip-total {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding-top: 14px;
-    margin-top: 2px;
-    border-top: 3px double var(--text);
-  }
-
-  .payslip-total .label {
-    font-size: 20px;
-    font-weight: 700;
-  }
-
-  .payslip-total .amount {
-    font-size: 34px;
-    font-weight: 700;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-  }
-</style>
-</head>
-<body>
-
-<div class="app">
-
-  <!-- 入力画面 -->
-  <div id="input-screen">
-    <h1>得点計算</h1>
-
-    <div id="games-container"></div>
-
-    <div class="summary">
-      <div class="summary-row"><span>商品得点</span><span id="sum-product">0 デルタ</span></div>
-      <div class="summary-row"><span>残り時間合計</span><span id="sum-time">0:00</span></div>
-      <div class="summary-row"><span>時間ボーナス</span><span id="sum-bonus">0 デルタ</span></div>
-    </div>
-
-    <div class="actions">
-      <button class="btn btn-secondary" id="reset-btn">リセット</button>
-      <button class="btn btn-primary" id="show-result-btn">結果表示</button>
-    </div>
-  </div>
-
-  <!-- リザルト画面 -->
-  <div id="result-screen">
-    <div class="payslip">
-      <div class="payslip-title">給与明細</div>
-      <div class="payslip-row"><span>商品得点</span><span class="amount" id="result-product">0 デルタ</span></div>
-      <div class="payslip-row"><span>残り時間ボーナス</span><span class="amount" id="result-bonus">0 デルタ</span></div>
-      <div class="payslip-total">
-        <span class="label">合計</span>
-        <span class="amount" id="result-total">0 デルタ</span>
+      <div id="result-screen">
+        <div class="payslip">
+          <svg
+            class="result-card-background"
+            viewBox="0 0 1000 520"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              d="M0,520 L0,432 C95,279 194,195 302,188 C405,181 448,279 557,269 C682,257 777,145 858,0 L1000,0 L1000,520 Z"
+            ></path>
+          </svg>
+          <div class="result-content">
+            <div class="payslip-title">
+              <span
+                class="material-symbols-outlined result-badge"
+                aria-hidden="true"
+                >verified</span
+              ><span>総合得点</span>
+            </div>
+            <div class="result-formula" id="result-formula">
+              商品売上 (0) + 時間ボーナス (0) =
+            </div>
+            <div class="result-amount" aria-label="総合得点">
+              <span class="result-number" id="result-total-number">0</span
+              ><span class="result-unit">デルタ</span>
+            </div>
+            <div class="result-message">
+              <span>上記金額（デルタ）を貴殿へ給与支給いたします。</span
+              ><span>ありがとうございました！</span>
+            </div>
+          </div>
+          <div class="result-breakdown">
+            <div class="payslip-row">
+              <span>商品得点</span
+              ><span class="amount" id="result-product">0 デルタ</span>
+            </div>
+            <div class="payslip-row">
+              <span>残り時間ボーナス</span
+              ><span class="amount" id="result-bonus">0 デルタ</span>
+            </div>
+            <span id="result-total">0 デルタ</span>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-secondary" id="back-btn">入力を修正</button
+          ><button class="btn btn-primary" id="reset-btn-2">
+            初期化して次のお客様へ
+          </button>
+        </div>
       </div>
     </div>
+    <script>
+      const UNIT_PRICES = [200, 300, 400, 500];
+      const MAX_GAME_SECONDS = 150;
+      const games = [
+        { qty: [0, 0, 0, 0], min: 0, sec: 0 },
+        { qty: [0, 0, 0, 0], min: 0, sec: 0 },
+        { qty: [0, 0, 0, 0], min: 0, sec: 0 },
+      ];
+      const gamesContainer = document.getElementById("games-container");
+      function yen(n) {
+        return n.toLocaleString("ja-JP") + " デルタ";
+      }
+      function formatTime(totalSeconds) {
+        return (
+          Math.floor(totalSeconds / 60) +
+          ":" +
+          String(totalSeconds % 60).padStart(2, "0")
+        );
+      }
+      function maxSecondsForMinute(min) {
+        return Math.max(0, Math.min(59, MAX_GAME_SECONDS - min * 60));
+      }
 
-    <div class="actions">
-      <button class="btn btn-secondary" id="back-btn">前に戻る</button>
-      <button class="btn btn-secondary" id="reset-btn-2">リセット</button>
-    </div>
-  </div>
-
-</div>
-
-<script>
-  const UNIT_PRICES = [200, 300, 400, 500];
-  const MAX_GAME_SECONDS = 150; // 1ゲームの長さ 2:30
-
-  // 各ゲームの状態: qty[4], min, sec
-  const games = [
-    { qty: [0, 0, 0, 0], min: 0, sec: 0 },
-    { qty: [0, 0, 0, 0], min: 0, sec: 0 },
-    { qty: [0, 0, 0, 0], min: 0, sec: 0 }
-  ];
-
-  const gamesContainer = document.getElementById('games-container');
-
-  function yen(n) {
-    return n.toLocaleString('ja-JP') + ' デルタ';
-  }
-
-  function formatTime(totalSeconds) {
-    const m = Math.floor(totalSeconds / 60);
-    const s = totalSeconds % 60;
-    return m + ':' + String(s).padStart(2, '0');
-  }
-
-  // 残り時間セレクトの選択肢を、ゲーム最大長(2:30)を超えないように組み立てる
-  function maxSecondsForMinute(min) {
-    const remaining = MAX_GAME_SECONDS - min * 60;
-    return Math.max(0, Math.min(59, remaining));
-  }
-
-  function buildGameCard(gameIndex) {
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    const title = document.createElement('div');
-    title.className = 'game-title';
-    title.textContent = 'ゲーム' + (gameIndex + 1);
-    card.appendChild(title);
-
-    const grid = document.createElement('div');
-    grid.className = 'product-list';
-
-    UNIT_PRICES.forEach((price, productIndex) => {
-      const item = document.createElement('div');
-      item.className = 'product-item';
-
-      const label = document.createElement('div');
-      label.className = 'product-label';
-      label.textContent = price + 'デルタ';
-      item.appendChild(label);
-
-      const counter = document.createElement('div');
-      counter.className = 'counter';
-
-      const minusBtn = document.createElement('button');
-      minusBtn.type = 'button';
-      minusBtn.textContent = '−';
-      minusBtn.setAttribute('aria-label', price + 'デルタの商品を1個減らす');
-      minusBtn.addEventListener('click', () => changeQty(gameIndex, productIndex, -1));
-
-      const qtySpan = document.createElement('span');
-      qtySpan.className = 'qty';
-      qtySpan.id = `qty-${gameIndex}-${productIndex}`;
-      qtySpan.textContent = '0';
-
-      const plusBtn = document.createElement('button');
-      plusBtn.type = 'button';
-      plusBtn.textContent = '＋';
-      plusBtn.setAttribute('aria-label', price + 'デルタの商品を1個増やす');
-      plusBtn.addEventListener('click', () => changeQty(gameIndex, productIndex, 1));
-
-      counter.appendChild(minusBtn);
-      counter.appendChild(qtySpan);
-      counter.appendChild(plusBtn);
-      item.appendChild(counter);
-      grid.appendChild(item);
-    });
-
-    card.appendChild(grid);
-
-    // 残り時間
-    const timeRow = document.createElement('div');
-    timeRow.className = 'time-row';
-
-    const timeLabel = document.createElement('span');
-    timeLabel.className = 'row-label';
-    timeLabel.textContent = '残り時間';
-    timeRow.appendChild(timeLabel);
-
-    const minSelect = document.createElement('select');
-    minSelect.id = `min-${gameIndex}`;
-    [0, 1, 2].forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m;
-      opt.textContent = m;
-      minSelect.appendChild(opt);
-    });
-    minSelect.addEventListener('change', () => onMinuteChange(gameIndex));
-    timeRow.appendChild(minSelect);
-
-    const minUnit = document.createElement('span');
-    minUnit.textContent = '分';
-    timeRow.appendChild(minUnit);
-
-    const secSelect = document.createElement('select');
-    secSelect.id = `sec-${gameIndex}`;
-    secSelect.addEventListener('change', () => onSecondChange(gameIndex));
-    timeRow.appendChild(secSelect);
-
-    const secUnit = document.createElement('span');
-    secUnit.textContent = '秒';
-    timeRow.appendChild(secUnit);
-
-    card.appendChild(timeRow);
-
-    // ゲームごとの商品得点
-    const scoreRow = document.createElement('div');
-    scoreRow.className = 'game-score';
-    scoreRow.innerHTML = '得点 <strong id="game-score-' + gameIndex + '">0 デルタ</strong>';
-    card.appendChild(scoreRow);
-
-    gamesContainer.appendChild(card);
-
-    fillSecondsOptions(gameIndex);
-  }
-
-  function fillSecondsOptions(gameIndex) {
-    const secSelect = document.getElementById(`sec-${gameIndex}`);
-    const g = games[gameIndex];
-    const maxSec = maxSecondsForMinute(g.min);
-    const prevValue = Math.min(g.sec, maxSec);
-
-    secSelect.innerHTML = '';
-    for (let s = 0; s <= maxSec; s++) {
-      const opt = document.createElement('option');
-      opt.value = s;
-      opt.textContent = String(s).padStart(2, '0');
-      secSelect.appendChild(opt);
-    }
-    g.sec = prevValue;
-    secSelect.value = String(prevValue);
-  }
-
-  function onMinuteChange(gameIndex) {
-    const minSelect = document.getElementById(`min-${gameIndex}`);
-    games[gameIndex].min = parseInt(minSelect.value, 10);
-    fillSecondsOptions(gameIndex);
-    recalcAll();
-  }
-
-  function onSecondChange(gameIndex) {
-    const secSelect = document.getElementById(`sec-${gameIndex}`);
-    games[gameIndex].sec = parseInt(secSelect.value, 10);
-    recalcAll();
-  }
-
-  function changeQty(gameIndex, productIndex, delta) {
-    const g = games[gameIndex];
-    const next = g.qty[productIndex] + delta;
-    if (next < 0) return;
-    g.qty[productIndex] = next;
-    document.getElementById(`qty-${gameIndex}-${productIndex}`).textContent = next;
-    recalcAll();
-  }
-
-  function gameProductScore(g) {
-    return g.qty.reduce((sum, q, i) => sum + q * UNIT_PRICES[i], 0);
-  }
-
-  function recalcAll() {
-    let productTotal = 0;
-    let secondsTotal = 0;
-
-    games.forEach((g, i) => {
-      const s = gameProductScore(g);
-      productTotal += s;
-      secondsTotal += g.min * 60 + g.sec;
-      document.getElementById(`game-score-${i}`).textContent = yen(s);
-    });
-
-    const bonusSeconds = Math.floor(secondsTotal / 10) * 10;
-    const timeBonus = Math.floor(secondsTotal / 10) * 100;
-    const total = productTotal + timeBonus;
-
-    document.getElementById('sum-product').textContent = yen(productTotal);
-    document.getElementById('sum-time').textContent = formatTime(secondsTotal);
-    document.getElementById('sum-bonus').textContent = yen(timeBonus);
-
-    return { productTotal, timeBonus, total };
-  }
-
-  function resetAll() {
-    games.forEach(g => {
-      g.qty = [0, 0, 0, 0];
-      g.min = 0;
-      g.sec = 0;
-    });
-
-    document.querySelectorAll('select[id^="min-"]').forEach(sel => { sel.value = '0'; });
-    games.forEach((g, i) => {
-      fillSecondsOptions(i);
-      document.getElementById(`sec-${i}`).value = '0';
-      UNIT_PRICES.forEach((_, pIdx) => {
-        document.getElementById(`qty-${i}-${pIdx}`).textContent = '0';
-      });
-    });
-
-    recalcAll();
-    showScreen('input');
-  }
-
-  function showScreen(name) {
-    document.getElementById('input-screen').style.display = name === 'input' ? 'block' : 'none';
-    document.getElementById('result-screen').style.display = name === 'result' ? 'flex' : 'none';
-  }
-
-  function showResult() {
-    const { productTotal, timeBonus, total } = recalcAll();
-    document.getElementById('result-product').textContent = yen(productTotal);
-    document.getElementById('result-bonus').textContent = yen(timeBonus);
-    document.getElementById('result-total').textContent = yen(total);
-    showScreen('result');
-  }
-
-  // 初期化
-  games.forEach((_, i) => buildGameCard(i));
-  recalcAll();
-
-  document.getElementById('reset-btn').addEventListener('click', resetAll);
-  document.getElementById('reset-btn-2').addEventListener('click', resetAll);
-  document.getElementById('show-result-btn').addEventListener('click', showResult);
-  document.getElementById('back-btn').addEventListener('click', () => showScreen('input'));
-</script>
-
-</body>
+      function buildGameCard(gameIndex) {
+        const card = document.createElement("div");
+        card.className = "card";
+        const header = document.createElement("div");
+        header.className = "game-header";
+        const title = document.createElement("div");
+        title.className = "game-title";
+        title.textContent = "GAME " + (gameIndex + 1);
+        header.appendChild(title);
+        const subtotal = document.createElement("div");
+        subtotal.className = "game-subtotal";
+        subtotal.innerHTML = `<span>小計:</span><strong id="game-subtotal-${gameIndex}">0</strong><span>デルタ</span>`;
+        header.appendChild(subtotal);
+        card.appendChild(header);
+        const grid = document.createElement("div");
+        grid.className = "product-list";
+        const productHeading = document.createElement("div");
+        productHeading.className = "product-heading";
+        productHeading.innerHTML =
+          '<span class="material-symbols-outlined" aria-hidden="true">inventory_2</span><span>正解商品数</span>';
+        grid.appendChild(productHeading);
+        UNIT_PRICES.forEach((price, productIndex) => {
+          const item = document.createElement("div");
+          item.className = "product-item";
+          const label = document.createElement("div");
+          label.className = "product-label";
+          label.textContent = price + " デルタ";
+          item.appendChild(label);
+          const counter = document.createElement("div");
+          counter.className = "counter";
+          const minus = document.createElement("button");
+          minus.type = "button";
+          minus.textContent = "−";
+          minus.setAttribute("aria-label", price + "デルタの商品を1個減らす");
+          minus.addEventListener("click", () =>
+            changeQty(gameIndex, productIndex, -1),
+          );
+          const qty = document.createElement("span");
+          qty.className = "qty";
+          qty.id = `qty-${gameIndex}-${productIndex}`;
+          qty.textContent = "0";
+          const plus = document.createElement("button");
+          plus.type = "button";
+          plus.textContent = "＋";
+          plus.setAttribute("aria-label", price + "デルタの商品を1個増やす");
+          plus.addEventListener("click", () =>
+            changeQty(gameIndex, productIndex, 1),
+          );
+          counter.append(minus, qty, plus);
+          item.appendChild(counter);
+          grid.appendChild(item);
+        });
+        card.appendChild(grid);
+        const timeRow = document.createElement("div");
+        timeRow.className = "time-row";
+        const minSelect = document.createElement("select");
+        minSelect.id = `min-${gameIndex}`;
+        [0, 1, 2].forEach((m) => {
+          const option = document.createElement("option");
+          option.value = m;
+          option.textContent = m;
+          minSelect.appendChild(option);
+        });
+        minSelect.addEventListener("change", () => onMinuteChange(gameIndex));
+        const secSelect = document.createElement("select");
+        secSelect.id = `sec-${gameIndex}`;
+        secSelect.addEventListener("change", () => onSecondChange(gameIndex));
+        timeRow.append(minSelect, secSelect);
+        card.appendChild(timeRow);
+        const quick = document.createElement("div");
+        quick.className = "quick-time";
+        quick.innerHTML = `<div class="quick-time-label"><span class="material-symbols-outlined timer-icon" aria-hidden="true">timer</span><span>残り時間</span></div><div class="digital-time-row"><button type="button" class="time-adjust" aria-label="10秒減らす">− <span>10秒</span></button><strong class="digital-time" id="game-time-${gameIndex}">0:00</strong><button type="button" class="time-adjust" aria-label="10秒増やす">＋ <span>10秒</span></button></div><div class="time-presets"><button type="button" data-seconds="30">0:30</button><button type="button" data-seconds="60">1:00</button><button type="button" data-seconds="90">1:30</button><button type="button" data-seconds="120">2:00</button></div>`;
+        quick
+          .querySelector(".time-adjust")
+          .addEventListener("click", () => adjustTimeSec(gameIndex, -10));
+        quick
+          .querySelectorAll(".time-adjust")[1]
+          .addEventListener("click", () => adjustTimeSec(gameIndex, 10));
+        quick
+          .querySelectorAll("[data-seconds]")
+          .forEach((button) =>
+            button.addEventListener("click", () =>
+              setTimeDirect(gameIndex, Number(button.dataset.seconds)),
+            ),
+          );
+        card.appendChild(quick);
+        const score = document.createElement("span");
+        score.className = "game-score";
+        score.id = `game-score-${gameIndex}`;
+        card.appendChild(score);
+        gamesContainer.appendChild(card);
+        fillSecondsOptions(gameIndex);
+      }
+      function fillSecondsOptions(i) {
+        const select = document.getElementById(`sec-${i}`);
+        const max = maxSecondsForMinute(games[i].min);
+        games[i].sec = Math.min(games[i].sec, max);
+        select.innerHTML = "";
+        for (let s = 0; s <= max; s++) {
+          const option = document.createElement("option");
+          option.value = s;
+          option.textContent = String(s).padStart(2, "0");
+          select.appendChild(option);
+        }
+        select.value = String(games[i].sec);
+      }
+      function updateGameTimeUI(i) {
+        const total = games[i].min * 60 + games[i].sec;
+        document.getElementById(`game-time-${i}`).textContent =
+          formatTime(total);
+        document
+          .querySelectorAll(
+            `#games-container .card:nth-child(${i + 1}) [data-seconds]`,
+          )
+          .forEach((button) =>
+            button.classList.toggle(
+              "active",
+              Number(button.dataset.seconds) === total,
+            ),
+          );
+      }
+      function onMinuteChange(i) {
+        games[i].min = Number(document.getElementById(`min-${i}`).value);
+        fillSecondsOptions(i);
+        updateGameTimeUI(i);
+        recalcAll();
+      }
+      function onSecondChange(i) {
+        games[i].sec = Number(document.getElementById(`sec-${i}`).value);
+        updateGameTimeUI(i);
+        recalcAll();
+      }
+      function setTimeDirect(i, seconds) {
+        const value = Math.max(0, Math.min(MAX_GAME_SECONDS, seconds));
+        games[i].min = Math.floor(value / 60);
+        games[i].sec = value % 60;
+        document.getElementById(`min-${i}`).value = String(games[i].min);
+        fillSecondsOptions(i);
+        document.getElementById(`sec-${i}`).value = String(games[i].sec);
+        updateGameTimeUI(i);
+        recalcAll();
+      }
+      function adjustTimeSec(i, delta) {
+        setTimeDirect(i, games[i].min * 60 + games[i].sec + delta);
+      }
+      function changeQty(i, productIndex, delta) {
+        games[i].qty[productIndex] = Math.max(
+          0,
+          games[i].qty[productIndex] + delta,
+        );
+        document.getElementById(`qty-${i}-${productIndex}`).textContent =
+          games[i].qty[productIndex];
+        recalcAll();
+      }
+      function gameProductScore(game) {
+        return game.qty.reduce(
+          (sum, qty, index) => sum + qty * UNIT_PRICES[index],
+          0,
+        );
+      }
+      function recalcAll() {
+        let productTotal = 0;
+        let secondsTotal = 0;
+        games.forEach((game, i) => {
+          const score = gameProductScore(game);
+          productTotal += score;
+          secondsTotal += game.min * 60 + game.sec;
+          document.getElementById(`game-subtotal-${i}`).textContent =
+            score.toLocaleString("ja-JP");
+          updateGameTimeUI(i);
+        });
+        const timeBonus = Math.floor(secondsTotal / 10) * 100;
+        document.getElementById("sum-product").textContent = yen(productTotal);
+        document.getElementById("sum-time").textContent =
+          formatTime(secondsTotal);
+        document.getElementById("sum-bonus").textContent = yen(timeBonus);
+        return { productTotal, timeBonus, total: productTotal + timeBonus };
+      }
+      function resetAll() {
+        games.forEach((game) => {
+          game.qty = [0, 0, 0, 0];
+          game.min = 0;
+          game.sec = 0;
+        });
+        games.forEach((game, i) => {
+          document.getElementById(`min-${i}`).value = "0";
+          fillSecondsOptions(i);
+          UNIT_PRICES.forEach(
+            (_, p) =>
+              (document.getElementById(`qty-${i}-${p}`).textContent = "0"),
+          );
+          updateGameTimeUI(i);
+        });
+        recalcAll();
+        showScreen("input");
+      }
+      function showScreen(name) {
+        document.getElementById("input-screen").style.display =
+          name === "input" ? "block" : "none";
+        document.getElementById("result-screen").style.display =
+          name === "result" ? "block" : "none";
+      }
+      function showResult() {
+        const { productTotal, timeBonus, total } = recalcAll();
+        document.getElementById("result-product").textContent =
+          yen(productTotal);
+        document.getElementById("result-bonus").textContent = yen(timeBonus);
+        document.getElementById("result-total").textContent = yen(total);
+        document.getElementById("result-formula").textContent =
+          `商品売上 (${productTotal.toLocaleString("ja-JP")}) + 時間ボーナス (${timeBonus.toLocaleString("ja-JP")}) =`;
+        document.getElementById("result-total-number").textContent =
+          total.toLocaleString("ja-JP");
+        showScreen("result");
+      }
+      games.forEach((_, i) => buildGameCard(i));
+      recalcAll();
+      document.getElementById("reset-btn").addEventListener("click", resetAll);
+      document
+        .getElementById("reset-btn-2")
+        .addEventListener("click", resetAll);
+      document
+        .getElementById("show-result-btn")
+        .addEventListener("click", showResult);
+      document
+        .getElementById("back-btn")
+        .addEventListener("click", () => showScreen("input"));
+    </script>
+  </body>
 </html>
